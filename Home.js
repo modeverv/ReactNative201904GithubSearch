@@ -13,7 +13,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  TextInput 
+  TextInput,
+  AppState,
 } from "react-native";
 
 type Props = {};
@@ -45,6 +46,19 @@ export default class App extends Component<Props> {
 
   navigateToDetail(item) {
     this.props.navigation.navigate('Detail', {item})
+  }
+
+  componentDidMount() {
+    AppState.addEventListener("change", this.onChangeState);
+  }
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this.onChangeState);    
+  }
+
+  onChangeState = (appState) => {
+    if ('active' == appState) {
+      this.fetchRepositories(true)
+    }
   }
 
   render() {
