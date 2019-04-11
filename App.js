@@ -7,36 +7,52 @@
  */
 
 import React, { Component } from "react";
-import { StyleSheet, Text, TouchableOpacity, View ,FlatList} from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 type Props = {};
 export default class App extends Component<Props> {
-
   state = {
-    items: [],
-  }
+    items: []
+  };
+  page = 0;
 
-  onPressFetch() {
-    console.log("onPressFetch");
+  fetchRepositories() {
+    const newPage = this.page + 1;
+    console.log(newPage)
     // https://api.github.com/search/repositories?q=react
-    fetch("https://api.github.com/search/repositories?q=react")
+    fetch(`https://api.github.com/search/repositories?q=react&page=${newPage}`)
       .then(response => response.json())
-      .then(({ items }) => this.setState({ items }));
+      .then(({ items }) => {
+        this.page = newPage;
+        this.setState({ items: [...this.state.items, ...items] });
+      });
   }
 
   render() {
-    console.log(this.state.items)
+    console.log(this.state.items);
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={{marginTop:40}} onPress={() => this.onPressFetch()}>
+        <TouchableOpacity
+          style={{ marginTop: 40 }}
+          onPress={() => this.fetchRepositories()}
+        >
           <Text>Fetch</Text>
         </TouchableOpacity>
         <FlatList
           data={this.state.items}
-          renderItem={({ item }) => <Text>{item.name}</Text>}
-          keyExtractor={( item ) => item.id}
-        >
-          </FlatList>
+          renderItem={({ item }) => (
+            <Text style={{ padding: 30 }}>{item.name}</Text>
+          )}
+          keyExtractor={(item) => item.id}
+          onEndReached={() => this.fetchRepositories()}
+          onEndReachedThreshold={0.1}
+        />
       </View>
     );
   }
