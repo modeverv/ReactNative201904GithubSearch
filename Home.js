@@ -12,14 +12,16 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  TextInput 
 } from "react-native";
 
 type Props = {};
 export default class App extends Component<Props> {
   state = {
     items: [],
-    refreshing: false
+    refreshing: false,
+    text: '',
   };
   page = 0;
 
@@ -28,7 +30,7 @@ export default class App extends Component<Props> {
     this.setState({ refreshing });
     console.log(newPage);
     // https://api.github.com/search/repositories?q=react
-    fetch(`https://api.github.com/search/repositories?q=react&page=${newPage}`)
+    fetch(`https://api.github.com/search/repositories?q=${this.state.text}&page=${newPage}`)
       .then(response => response.json())
       .then(({ items }) => {
         this.page = newPage;
@@ -49,12 +51,14 @@ export default class App extends Component<Props> {
     console.log(this.state.items);
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          style={{ marginTop: 40 }}
-          onPress={() => this.fetchRepositories()}
-        >
-          <Text>Fetch</Text>
-        </TouchableOpacity>
+        <View style={styles.inputWrapper}>
+          <TextInput style={styles.input} onChangeText={(text) => this.setState({ text })}/>
+          <TouchableOpacity
+            onPress={() => this.fetchRepositories(true)}
+          >
+            <Text>Seach</Text>
+          </TouchableOpacity>
+        </View>
         <FlatList
           data={this.state.items}
           renderItem={({ item }) => (
@@ -79,5 +83,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5FCFF"
+  },
+  inputWrapper: {
+    backgroundColor: "#fff",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 20,
+
+  },
+  input: {
+    flex: 1,
+    backgroundColor: "#ccc",
+    padding: 10,
+    marginRight: 5,
+    borderRadius: 7,
   }
 });
