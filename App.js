@@ -20,10 +20,10 @@ export default createStackNavigator({
   },
   Detail: {
     screen: Detail,
-    navigationOptions: {
-      title: 'Detail',
-    },
-  },
+    navigationOptions: ({ navigation }) => ({
+      title: navigation.state.params.item.name
+    })
+  }
 },{
     initialRouteName: 'Home',
 });
